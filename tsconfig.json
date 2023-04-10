@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./*"],
+      "@/api": ["./api-client/index.ts"],
+      "@/api/*": ["./api-client/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "src/lib/gtag.js",
+    "src/assets/theme/index.js"
+  ],
+  "exclude": ["node_modules"]
+}
