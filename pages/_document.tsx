@@ -1,15 +1,15 @@
-import { GA_ANALYTICS_MEASUREMENT_ID } from '@/lib/gtag'
-import { createEmotionCache, theme } from '@/utils'
-import createEmotionServer from '@emotion/server/create-instance'
-import Document, { Head, Html, Main, NextScript } from 'next/document'
-import Script from 'next/script'
+import { GA_ANALYTICS_MEASUREMENT_ID } from "@/lib/gtag";
+import { createEmotionCache, theme } from "@/utils";
+import createEmotionServer from "@emotion/server/create-instance";
+import Document, { Head, Html, Main, NextScript } from "next/document";
+import Script from "next/script";
 
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NODE_ENV === "production";
 
 export default class MyDocument extends Document {
   render() {
     return (
-      <Html lang={'en'}>
+      <Html lang={"en"}>
         <Head>
           {/* enable analytics script only for production */}
           {isProd && (
@@ -52,14 +52,44 @@ export default class MyDocument extends Document {
           <Main />
           <NextScript />
         </body>
+        <div id="fb-root"></div>
+
+        <div id="fb-customer-chat" className="fb-customerchat"></div>
+
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+            var chatbox = document.getElementById("fb-customer-chat");
+            chatbox.setAttribute("page_id", "119952837764885");
+            chatbox.setAttribute("attribution", "biz_inbox");
+
+            window.fbAsyncInit = function () {
+              FB.init({
+                xfbml: true,
+                version: "v16.0",
+              });
+            };
+
+            (function (d, s, id) {
+              var js,
+                fjs = d.getElementsByTagName(s)[0];
+              if (d.getElementById(id)) return;
+              js = d.createElement(s);
+              js.id = id;
+              js.src = "https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js";
+              fjs.parentNode.insertBefore(js, fjs);
+            })(document, "script", "facebook-jssdk");
+          `,
+          }}
+        />
       </Html>
-    )
+    );
   }
 }
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
-MyDocument.getInitialProps = async ctx => {
+MyDocument.getInitialProps = async (ctx) => {
   // Resolution order
   //
   // On the server:
@@ -82,36 +112,36 @@ MyDocument.getInitialProps = async ctx => {
   // 3. app.render
   // 4. page.render
 
-  const originalRenderPage = ctx.renderPage
+  const originalRenderPage = ctx.renderPage;
 
   // You can consider sharing the same Emotion cache between all the SSR requests to speed up performance.
   // However, be aware that it can have global side effects.
-  const cache = createEmotionCache()
-  const { extractCriticalToChunks } = createEmotionServer(cache)
+  const cache = createEmotionCache();
+  const { extractCriticalToChunks } = createEmotionServer(cache);
 
   ctx.renderPage = () =>
     originalRenderPage({
       enhanceApp: (App: any) =>
         function EnhanceApp(props) {
-          return <App emotionCache={cache} {...props} />
+          return <App emotionCache={cache} {...props} />;
         },
-    })
+    });
 
-  const initialProps = await Document.getInitialProps(ctx)
+  const initialProps = await Document.getInitialProps(ctx);
   // This is important. It prevents Emotion to render invalid HTML.
   // See https://github.com/mui/material-ui/issues/26561#issuecomment-855286153
-  const emotionStyles = extractCriticalToChunks(initialProps.html)
-  const emotionStyleTags = emotionStyles.styles.map(style => (
+  const emotionStyles = extractCriticalToChunks(initialProps.html);
+  const emotionStyleTags = emotionStyles.styles.map((style) => (
     <style
-      data-emotion={`${style.key} ${style.ids.join(' ')}`}
+      data-emotion={`${style.key} ${style.ids.join(" ")}`}
       key={style.key}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: style.css }}
     />
-  ))
+  ));
 
   return {
     ...initialProps,
     emotionStyleTags,
-  }
-}
+  };
+};
